@@ -1,4 +1,6 @@
-# My Web3 Learning Journey: Solana vs. Ethereum
+# My Web3 Learning Journey: Solana & Ethereum
+
+🔗 **Live Site**: [https://shreyas-web3.vercel.app](https://shreyas-web3.vercel.app)
 
 This repository documents my ongoing Web3 development learning journey, focusing on core blockchain concepts and practical dApp development. It features an interactive single-page web application (SPA) designed to visualize and compare fundamental architectural models and development paradigms of Solana and Ethereum.
 
