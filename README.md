@@ -26,7 +26,7 @@ Explore the live interactive application that summarizes key concepts:
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/ShreyasThakur0809/Shreyas-Web3-.git](https://github.com/ShreyasThakur0809/Shreyas-Web3-.git)
+    git clone [https://github.com/ShreyasThakur0809/Shreyas-Web3-.git]
     ```
 2.  **Navigate to the project directory:**
     ```bash
