@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Web3 Learning Journey: Solana vs. Ethereum</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .tab-btn {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-btn.active {
+            border-bottom-color: #6366f1; /* indigo-500 */
+            color: #1e293b; /* slate-800 */
+        }
+        .info-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .details-pane {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .details-pane.active {
+            display: block;
+        }
+        .code-block {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-700">
+
+    <div class="container mx-auto p-4 md:p-8">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-800 mb-2">My Web3 Learning Journey</h1>
+            <p class="text-lg text-slate-500">An Interactive Comparison of Solana and Ethereum</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="flex justify-center border-b border-slate-200 mb-8">
+            <button class="tab-btn active text-slate-500 font-semibold py-4 px-6" onclick="showTab('accounts')">🏛️ Account Models</button>
+            <button class="tab-btn text-slate-500 font-semibold py-4 px-6" onclick="showTab('transactions')">⚙️ Execution & Transactions</button>
+            <button class="tab-btn text-slate-500 font-semibold py-4 px-6" onclick="showTab('development')">💻 dApp Development</button>
+        </nav>
+
+        <!-- Content Area -->
+        <main>
+            <!-- Accounts Tab -->
+            <section id="accounts-tab" class="tab-content">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-slate-800">Account Models</h2>
+                    <p class="mt-2 text-slate-500 max-w-2xl mx-auto">A fundamental difference between Solana and Ethereum is how they handle data and ownership. Click on a diagram element to learn more.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Solana Column -->
+                    <div>
+                        <h3 class="text-2xl font-bold text-center mb-4 text-slate-800">Solana</h3>
+                        <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200 min-h-[400px]">
+                            <p class="text-center mb-4 font-medium text-slate-600">"Everything is an account"</p>
+                            <div class="relative p-4 border-2 border-dashed border-slate-300 rounded-lg">
+                                <span class="absolute -top-3 left-4 bg-white px-2 font-bold text-slate-500">Solana Blockchain</span>
+                                
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="info-card bg-indigo-50 border border-indigo-200 p-3 rounded-lg text-center" onclick="showDetails('sol-program')">
+                                        <p class="font-bold text-indigo-800">Program Account</p>
+                                        <p class="text-xs text-indigo-600">(e.g., Uber Program)</p>
+                                    </div>
+                                    <div class="info-card bg-emerald-50 border border-emerald-200 p-3 rounded-lg text-center" onclick="showDetails('sol-pda')">
+                                        <p class="font-bold text-emerald-800">Data Account (PDA)</p>
+                                        <p class="text-xs text-emerald-600">(e.g., Ride Info)</p>
+                                    </div>
+                                     <div class="info-card bg-sky-50 border border-sky-200 p-3 rounded-lg text-center" onclick="showDetails('sol-token')">
+                                        <p class="font-bold text-sky-800">Token Program</p>
+                                        <p class="text-xs text-sky-600">(Native Program)</p>
+                                    </div>
+                                    <div class="info-card bg-rose-50 border border-rose-200 p-3 rounded-lg text-center" onclick="showDetails('sol-ata')">
+                                        <p class="font-bold text-rose-800">Token Account (ATA)</p>
+                                        <p class="text-xs text-rose-600">(Also a PDA)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Ethereum Column -->
+                    <div>
+                        <h3 class="text-2xl font-bold text-center mb-4 text-slate-800">Ethereum</h3>
+                        <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200 min-h-[400px]">
+                            <p class="text-center mb-4 font-medium text-slate-600">"Two types of accounts"</p>
+                            <div class="relative p-4 border-2 border-dashed border-slate-300 rounded-lg">
+                                <span class="absolute -top-3 left-4 bg-white px-2 font-bold text-slate-500">Ethereum World State</span>
+                                <div class="space-y-4">
+                                    <div class="info-card bg-amber-50 border border-amber-200 p-3 rounded-lg text-center" onclick="showDetails('eth-eoa')">
+                                        <p class="font-bold text-amber-800">Externally Owned Account (EOA)</p>
+                                        <p class="text-xs text-amber-600">(User Wallet)</p>
+                                    </div>
+                                    <div class="info-card bg-teal-50 border border-teal-200 p-3 rounded-lg text-center" onclick="showDetails('eth-contract')">
+                                        <p class="font-bold text-teal-800">Contract Account</p>
+                                        <p class="text-xs text-teal-600">(Code + Storage)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Details Pane -->
+                <div id="accounts-details" class="mt-8 bg-white p-6 rounded-xl shadow-lg border border-slate-200">
+                    <p class="text-center text-slate-500">Click an item above to see details.</p>
+                </div>
+            </section>
+
+            <!-- Transactions Tab -->
+            <section id="transactions-tab" class="tab-content hidden">
+                 <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-slate-800">Execution & Transactions</h2>
+                    <p class="mt-2 text-slate-500 max-w-2xl mx-auto">How instructions are bundled and executed differs significantly, impacting developers and users.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Solana Column -->
+                    <div>
+                        <h3 class="text-2xl font-bold text-center mb-4 text-slate-800">Solana</h3>
+                        <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
+                            <h4 class="font-bold text-lg mb-2">Transaction Model</h4>
+                            <p class="mb-4">A transaction is a bundle of one or more atomic <span class="font-semibold text-indigo-600">instructions</span>. All instructions succeed or fail together.</p>
+                            <div class="space-y-2">
+                                <div class="bg-slate-100 p-3 rounded-md"><strong>Instruction 1:</strong> Create a data account (PDA) for a user.</div>
+                                <div class="bg-slate-100 p-3 rounded-md"><strong>Instruction 2:</strong> Initialize data in that account.</div>
+                                <div class="bg-slate-100 p-3 rounded-md"><strong>Instruction 3:</strong> Transfer SOL to the new account for rent.</div>
+                            </div>
+                             <p class="mt-4 text-sm text-slate-500">This atomicity allows for complex, multi-step operations in a single, secure transaction.</p>
+                        </div>
+                    </div>
+                    <!-- Ethereum Column -->
+                    <div>
+                        <h3 class="text-2xl font-bold text-center mb-4 text-slate-800">Ethereum</h3>
+                         <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
+                            <h4 class="font-bold text-lg mb-2">Transaction Object</h4>
+                            <p class="mb-4">A transaction is a single message from an EOA to another account, containing key fields.</p>
+                            <ul class="list-disc list-inside space-y-1 text-slate-600">
+                                <li><span class="font-semibold">To:</span> Contract or EOA address.</li>
+                                <li><span class="font-semibold">Value:</span> Amount of ETH to send.</li>
+                                <li><span class="font-semibold">Data:</span> Encoded function call and arguments.</li>
+                                <li><span class="font-semibold">Gas Limit/Price:</span> Fee parameters.</li>
+                                <li><span class="font-semibold">Nonce:</span> Transaction counter.</li>
+                            </ul>
+                            <p class="mt-4 text-sm text-slate-500">The EVM executes the code based on the `data` field, modifying the contract's internal storage.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Development Tab -->
+            <section id="development-tab" class="tab-content hidden">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-slate-800">dApp Development Concepts</h2>
+                    <p class="mt-2 text-slate-500 max-w-2xl mx-auto">Key tools and concepts for building frontends that interact with blockchains.</p>
+                </div>
+                 <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
+                        <h3 class="text-xl font-bold mb-4">React Hooks: `useState` & `useEffect`</h3>
+                        <p class="mb-4">These are the building blocks of modern React applications for managing state and side effects.</p>
+                        <div class="p-4 bg-slate-100 rounded-lg">
+                            <p class="font-semibold text-slate-800">`useState`</p>
+                            <p class="text-sm text-slate-600 mb-2">Manages component data. When state changes, the component re-renders.</p>
+                            <p class="font-semibold text-slate-800">`useEffect`</p>
+                            <p class="text-sm text-slate-600">Handles side effects like data fetching or subscriptions after the component renders.</p>
+                        </div>
+                        <div class="mt-4">
+                            <h4 class="font-semibold mb-2">Example: Fetching Data</h4>
+                            <div class="code-block">
+const [data, setData] = useState([]);
+
+useEffect(() => {
+  // Runs once after initial render
+  fetch('api/data')
+    .then(res => res.json())
+    .then(json => setData(json));
+}, []); // Empty array means run once
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
+                        <h3 class="text-xl font-bold mb-4">Ethereum: ABI</h3>
+                        <p class="mb-4">The <span class="font-semibold text-teal-600">Application Binary Interface (ABI)</span> is the "API documentation" for an Ethereum smart contract.</p>
+                        <p class="mb-4 text-slate-600">It's a JSON file that defines how to call contract functions and interpret their data, enabling tools and UIs to interact with them.</p>
+                        <div class="mt-4">
+                            <h4 class="font-semibold mb-2">Example ABI Snippet for `add(uint a, uint b)`</h4>
+                            <div class="code-block">
+{
+  "inputs": [
+    { "name": "a", "type": "uint256" },
+    { "name": "b", "type": "uint256" }
+  ],
+  "name": "add",
+  "outputs": [
+    { "name": "", "type": "uint256" }
+  ],
+  "stateMutability": "pure",
+  "type": "function"
+}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+    </div>
+
+    <script>
+        const detailsData = {
+            'sol-program': {
+                title: 'Solana Program Account',
+                content: 'This account stores executable code (a smart contract). It is owned by the BPF Loader program. Programs themselves are stateless; they contain only logic.'
+            },
+            'sol-pda': {
+                title: 'Program Derived Address (PDA)',
+                content: 'A data account owned by a Program Account. PDAs are derived from seeds and a program ID, and they do not have a private key. This allows the owning program to be the sole signer for transactions involving this account, enabling secure state management.'
+            },
+            'sol-token': {
+                title: 'SPL Token Program',
+                content: 'A native Solana program that defines a common standard for fungible and non-fungible tokens. It handles creating tokens (mints), transferring them, and burning them.'
+            },
+            'sol-ata': {
+                title: 'Associated Token Account (ATA)',
+                content: 'A specific type of PDA used to store tokens for a user. Its address is deterministically derived from the user\'s wallet address and the token\'s mint address. This is the standard way to manage token balances on Solana.'
+            },
+            'eth-eoa': {
+                title: 'Externally Owned Account (EOA)',
+                content: 'An account controlled by a private key, typically held by a user. EOAs are the only accounts that can initiate transactions (including ETH transfers and smart contract calls) and must pay for gas.'
+            },
+            'eth-contract': {
+                title: 'Ethereum Contract Account',
+                content: 'An account controlled by its smart contract code, not a private key. It contains both executable code and its own persistent storage (state variables). It cannot initiate transactions but can react to them and call other contracts.'
+            }
+        };
+
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.add('hidden'));
+            document.getElementById(tabName + '-tab').classList.remove('hidden');
+
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`button[onclick="showTab('${tabName}')"]`).classList.add('active');
+        }
+
+        function showDetails(detailKey) {
+            const pane = document.getElementById('accounts-details');
+            const data = detailsData[detailKey];
+            if (data) {
+                pane.innerHTML = `
+                    <h4 class="font-bold text-xl mb-2 text-slate-800">${data.title}</h4>
+                    <p class="text-slate-600">${data.content}</p>
+                `;
+                pane.classList.add('active');
+            }
+        }
+        
+        // Initialize first tab
+        document.addEventListener('DOMContentLoaded', () => {
+            showTab('accounts');
+        });
+    </script>
+
+</body>
+</html>
