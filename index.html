@@ -12,12 +12,11 @@
     <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
     <!-- 
         Chosen Palette: Warm Neutrals (Slate & Stone from Tailwind)
-        Application Structure Plan: A comparative, single-page dashboard. The user starts with a high-level overview and can navigate to specific architectural comparisons (Account Models, Transaction Models, Development). This structure was chosen to directly contrast the two ecosystems, which is a primary theme in the provided learning materials. The user flow is designed to be exploratory, allowing users to dive into the topic that interests them most, rather than following a linear path. Key interactions include tabbed navigation and clickable info cards to reveal more details, making the dense information digestible. A new "Web3 AI Assistant" tab is added for LLM-powered concept explanations, providing an on-demand learning tool.
+        Application Structure Plan: A comparative, single-page dashboard. The user starts with a high-level overview and can navigate to specific architectural comparisons (Account Models, Transaction Models, Development). This structure was chosen to directly contrast the two ecosystems, which is a primary theme in the provided learning materials. The user flow is designed to be exploratory, allowing users to dive into the topic that interests them most, rather than following a linear path. Key interactions include tabbed navigation and clickable info cards to reveal more details, making the dense information digestible.
         Visualization & Content Choices: 
         - Account Models: Goal is to compare. Method is side-by-side diagrams using HTML/CSS, not SVG. Interaction involves clicking on a diagram element to see a detailed info card. Justification: Visual comparison is most effective for architectural differences.
         - Transaction/Execution Models: Goal is to explain processes. Method is a sequential flow diagram built with HTML/CSS. Interaction is hovering over steps to see explanations. Justification: Sequential diagrams clearly show process flow.
         - Development Concepts (React Hooks, ABIs, Solana/Ethereum Frontend): Goal is to inform and compare code. Method is interactive code snippets and definition lists. Interaction is toggling between code and explanation. Justification: Direct code examples are best for developer-focused concepts, and side-by-side comparison highlights differences.
-        - Web3 AI Assistant: Goal is to explain concepts. Method is a text input and LLM-generated text response. Interaction involves typing a query and clicking a button. Justification: Directly answers user questions on Web3 concepts, enhancing learning.
         - Libraries: Ethers.js CDN added for Ethereum examples. No Chart.js needed as the data is conceptual, not quantitative.
         CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. 
     -->
@@ -79,7 +78,6 @@
             <button class="tab-btn active text-slate-500 font-semibold py-4 px-6" onclick="showTab('accounts')">🏛️ Account Models</button>
             <button class="tab-btn text-slate-500 font-semibold py-4 px-6" onclick="showTab('transactions')">⚙️ Execution & Transactions</button>
             <button class="tab-btn text-slate-500 font-semibold py-4 px-6" onclick="showTab('development')">💻 dApp Development</button>
-            <button class="tab-btn text-slate-500 font-semibold py-4 px-6" onclick="showTab('ai-assistant')">✨ Web3 AI Assistant</button>
         </nav>
 
         <!-- Content Area -->
@@ -469,36 +467,6 @@ async function callEthContract() {
                     </div>
                 </div>
             </section>
-
-            <!-- New: AI Assistant Tab -->
-            <section id="ai-assistant-tab" class="tab-content hidden">
-                <div class="text-center mb-8">
-                    <h2 class="text-3xl font-bold text-slate-800">✨ Web3 AI Assistant</h2>
-                    <p class="mt-2 text-slate-500 max-w-2xl mx-auto">Ask me anything about Web3 concepts (Solana, Ethereum, dApps, etc.) and get an explanation!</p>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200 max-w-2xl mx-auto">
-                    <div class="flex flex-col space-y-4">
-                        <textarea
-                            id="ai-query-input"
-                            class="w-full p-3 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-y min-h-[100px]"
-                            placeholder="e.g., Explain what a Program Derived Address (PDA) is in Solana, What is gas in Ethereum, How do NFTs work?"
-                        ></textarea>
-                        <button
-                            id="ai-explain-button"
-                            class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-                            onclick="explainConcept()"
-                        >
-                            ✨ Explain Concept
-                        </button>
-                        <div id="ai-loading-indicator" class="hidden text-center text-indigo-500 font-semibold">
-                            Thinking...
-                        </div>
-                        <div id="ai-response-area" class="mt-4 p-4 bg-slate-50 rounded-md border border-slate-200 text-slate-700 prose max-w-none">
-                            <p class="text-center text-slate-500">Your explanation will appear here.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
         </main>
 
     </div>
@@ -553,68 +521,10 @@ async function callEthContract() {
             }
         }
         
-        // Gemini API Integration Logic
-        async function explainConcept() {
-            const queryInput = document.getElementById('ai-query-input');
-            const responseArea = document.getElementById('ai-response-area');
-            const loadingIndicator = document.getElementById('ai-loading-indicator');
-            const explainButton = document.getElementById('ai-explain-button');
-
-            const prompt = queryInput.value.trim();
-            if (!prompt) {
-                responseArea.innerHTML = '<p class="text-red-500 text-center">Please enter a concept to explain.</p>';
-                return;
-            }
-
-            loadingIndicator.classList.remove('hidden');
-            explainButton.disabled = true;
-            responseArea.innerHTML = '<p class="text-center text-slate-500">Thinking...</p>'; // Clear previous response
-
-            try {
-                let chatHistory = [];
-                chatHistory.push({ role: "user", parts: [{ text: `Explain the following Web3 concept concisely and clearly, suitable for someone learning Web3 from scratch. Focus on core principles and practical implications, avoiding excessive jargon where possible. If it's a comparison, highlight key differences. Concept: "${prompt}"` }] });
-                
-                const payload = { contents: chatHistory };
-                const apiKey = ""; // Canvas will automatically provide this in runtime
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    const text = result.candidates[0].content.parts[0].text;
-                    responseArea.innerHTML = `<div class="prose max-w-none">${marked.parse(text)}</div>`; // Use marked.js for Markdown rendering
-                } else {
-                    responseArea.innerHTML = '<p class="text-red-500 text-center">Sorry, I could not generate an explanation. Please try again.</p>';
-                    console.error("Gemini API response structure unexpected:", result);
-                }
-            } catch (error) {
-                responseArea.innerHTML = '<p class="text-red-500 text-center">An error occurred while fetching the explanation. Please check your network or try again later.</p>';
-                console.error("Error calling Gemini API:", error);
-            } finally {
-                loadingIndicator.classList.add('hidden');
-                explainButton.disabled = false;
-            }
-        }
-
-        // Load marked.js for Markdown rendering in AI response
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
-        script.onload = () => {
-            // Initialize first tab after marked.js is loaded
-            document.addEventListener('DOMContentLoaded', () => {
-                showTab('accounts');
-            });
-        };
-        document.head.appendChild(script);
-
+        // Initialize first tab
+        document.addEventListener('DOMContentLoaded', () => {
+            showTab('accounts');
+        });
     </script>
 
 </body>
