@@ -9,39 +9,46 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- 
-        Chosen Palette: Warm Neutrals (Slate & Stone from Tailwind)
-        Application Structure Plan: A comparative, single-page dashboard. The user starts with a high-level overview and can navigate to specific architectural comparisons (Account Models, Transaction Models, Development). This structure was chosen to directly contrast the two ecosystems, which is a primary theme in the provided learning materials. The user flow is designed to be exploratory, allowing users to dive into the topic that interests them most, rather than following a linear path. Key interactions include tabbed navigation and clickable info cards to reveal more details, making the dense information digestible.
+        Chosen Palette: Dark Neutrals (Slate & Gray from Tailwind) with subtle accents.
+        Application Structure Plan: A comparative, single-page dashboard with tabbed navigation. The user starts with a high-level overview and can navigate to specific architectural comparisons (Account Models, Transaction Models, Development, Solidity, ERC-20). The user flow is exploratory. Key interactions include tabbed navigation and clickable info cards to reveal more details. Code snippets are now collapsible for better readability.
         Visualization & Content Choices: 
-        - Account Models: Goal is to compare. Method is side-by-side diagrams using HTML/CSS. Interaction involves clicking on a diagram element to see a detailed info card. Justification: Visual comparison is most effective for architectural differences.
-        - Transaction/Execution Models: Goal is to explain processes. Method is a sequential flow diagram built with HTML/CSS. Interaction is hovering over steps to see explanations. Justification: Sequential diagrams clearly show process flow.
-        - Development Concepts (React Hooks, ABIs, Solana/Ethereum Frontend): Goal is to inform and compare code. Method is interactive code snippets and definition lists. Justification: Direct code examples are best for developer-focused concepts, and side-by-side comparison highlights differences.
-        - Solidity Fundamentals: Goal is to explain core Solidity concepts. Method is text explanations and Solidity code snippets. Justification: Provides foundational knowledge for smart contract development.
+        - Account Models: Goal is to compare. Method is side-by-side diagrams using HTML/CSS. Interaction involves clicking on a diagram element to see a detailed info card.
+        - Transaction/Execution Models: Goal is to explain processes. Method is a sequential flow diagram built with HTML/CSS. Interaction is hovering over steps to see explanations.
+        - Development Concepts (React Hooks, ABIs, Solana/Ethereum Frontend): Goal is to inform and compare code. Method is interactive code snippets with collapsible sections.
+        - Solidity Fundamentals: Goal is to explain core Solidity concepts. Method is text explanations and Solidity code snippets with collapsible sections.
+        - ERC-20 & OpenZeppelin: Goal is to explain token standards. Method is text explanations and Solidity code snippets with collapsible sections.
         CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. 
     -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc; /* slate-50 */
+            background-color: #1a202c; /* gray-900 */
+            color: #e2e8f0; /* gray-200 */
         }
         .tab-btn {
             transition: all 0.3s ease;
             border-bottom: 2px solid transparent;
+            color: #a0aec0; /* gray-400 */
         }
         .tab-btn.active {
             border-bottom-color: #6366f1; /* indigo-500 */
-            color: #1e293b; /* slate-800 */
+            color: #e2e8f0; /* gray-200 */
         }
         .info-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
+            background-color: #2d3748; /* gray-800 */
+            color: #cbd5e0; /* gray-300 */
         }
         .info-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
         }
         .details-pane {
             display: none;
             animation: fadeIn 0.5s;
+            background-color: #2d3748; /* gray-800 */
+            color: #cbd5e0; /* gray-300 */
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -50,33 +57,69 @@
         .details-pane.active {
             display: block;
         }
-        .code-block {
-            background-color: #1e293b;
-            color: #e2e8f0;
+        .code-block-container {
+            background-color: #1e293b; /* slate-900 */
+            color: #e2e8f0; /* slate-200 */
             padding: 1rem;
             border-radius: 0.5rem;
             font-family: 'Courier New', Courier, monospace;
             white-space: pre-wrap;
             font-size: 0.875rem;
-            overflow-x: auto; /* Allow horizontal scrolling for wide code */
+            overflow-x: auto;
+        }
+        .collapsible-header {
+            background-color: #2d3748; /* gray-800 */
+            color: #e2e8f0;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            transition: background-color 0.2s ease;
+        }
+        .collapsible-header:hover {
+            background-color: #4a5568; /* gray-700 */
+        }
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            padding: 0 1rem; /* Adjust padding to match CodeBlock */
+            background-color: #1e293b; /* Code block background */
+            border-radius: 0.5rem;
+        }
+        .collapsible-content.expanded {
+            max-height: 1000px; /* Arbitrary large value, adjust as needed */
+            padding: 1rem; /* Restore padding when expanded */
+            transition: max-height 0.5s ease-in;
+        }
+        .arrow-icon {
+            transition: transform 0.3s ease;
+        }
+        .arrow-icon.expanded {
+            transform: rotate(90deg);
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-700">
+<body class="bg-gray-900 text-gray-200">
 
     <div class="container mx-auto p-4 md:p-8">
         
         <header class="text-center mb-12">
-            <h1 class="text-4xl md:text-5xl font-bold text-slate-800 mb-2">My Web3 Learning Journey</h1>
-            <p class="text-lg text-slate-500">An Interactive Comparison of Solana and Ethereum</p>
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-100 mb-2">My Web3 Learning Journey</h1>
+            <p class="text-lg text-gray-400">An Interactive Comparison of Solana and Ethereum</p>
         </header>
 
         <!-- Navigation Tabs -->
-        <nav class="flex justify-center border-b border-slate-200 mb-8">
-            <button class="tab-btn active text-slate-500 font-semibold py-4 px-6" onclick="showTab('accounts')">🏛️ Account Models</button>
-            <button class="tab-btn text-slate-500 font-semibold py-4 px-6" onclick="showTab('transactions')">⚙️ Execution & Transactions</button>
-            <button class="tab-btn text-slate-500 font-semibold py-4 px-6" onclick="showTab('development')">💻 dApp Development</button>
-            <button class="tab-btn text-slate-500 font-semibold py-4 px-6" onclick="showTab('solidity')">📜 Solidity Fundamentals</button>
+        <nav class="flex justify-center border-b border-gray-700 mb-8">
+            <button class="tab-btn active text-gray-200 font-semibold py-4 px-6" onclick="showTab('accounts')">🏛️ Account Models</button>
+            <button class="tab-btn text-gray-400 font-semibold py-4 px-6" onclick="showTab('transactions')">⚙️ Execution & Transactions</button>
+            <button class="tab-btn text-gray-400 font-semibold py-4 px-6" onclick="showTab('development')">💻 dApp Development</button>
+            <button class="tab-btn text-gray-400 font-semibold py-4 px-6" onclick="showTab('solidity')">📜 Solidity Fundamentals</button>
+            <button class="tab-btn text-gray-400 font-semibold py-4 px-6" onclick="showTab('erc20')">💎 ERC-20 & Tokens</button>
         </nav>
 
         <!-- Content Area -->
@@ -84,35 +127,35 @@
             <!-- Accounts Tab -->
             <section id="accounts-tab" class="tab-content">
                 <div class="text-center mb-8">
-                    <h2 class="text-3xl font-bold text-slate-800">Account Models</h2>
-                    <p class="mt-2 text-slate-500 max-w-2xl mx-auto">A fundamental difference between Solana and Ethereum is how they handle data and ownership. Click on a diagram element to learn more.</p>
+                    <h2 class="text-3xl font-bold text-gray-100">Account Models</h2>
+                    <p class="mt-2 text-gray-400 max-w-2xl mx-auto">A fundamental difference between Solana and Ethereum is how they handle data and ownership. Click on a diagram element to learn more.</p>
                 </div>
                 <div class="grid md:grid-cols-2 gap-8">
                     <!-- Solana Column -->
                     <div>
-                        <h3 class="text-2xl font-bold text-center mb-4 text-slate-800">Solana</h3>
-                        <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200 min-h-[400px]">
-                            <p class="text-center mb-4 font-medium text-slate-600">"Everything is an account"</p>
-                            <!-- Solana Account Diagram - Directly in HTML -->
-                            <div class="relative p-4 border-2 border-dashed border-slate-300 rounded-lg">
-                                <span class="absolute -top-3 left-4 bg-white px-2 font-bold text-slate-500">Solana Blockchain</span>
+                        <h3 class="text-2xl font-bold text-center mb-4 text-gray-100">Solana</h3>
+                        <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 min-h-[400px]">
+                            <p class="text-center mb-4 font-medium text-gray-300">"Everything is an account"</p>
+                            <!-- Solana Account Diagram -->
+                            <div class="relative p-4 border-2 border-dashed border-gray-600 rounded-lg">
+                                <span class="absolute -top-3 left-4 bg-gray-800 px-2 font-bold text-gray-400">Solana Blockchain</span>
                                 
                                 <div class="grid grid-cols-2 gap-4">
-                                    <div class="info-card bg-indigo-50 border border-indigo-200 p-3 rounded-lg text-center" onclick="showDetails('sol-program')">
-                                        <p class="font-bold text-indigo-800">Program Account</p>
-                                        <p class="text-xs text-indigo-600">(e.g., Uber Program)</p>
+                                    <div class="info-card bg-indigo-800 border border-indigo-600 p-3 rounded-lg text-center" onclick="showDetails('sol-program')">
+                                        <p class="font-bold text-indigo-200">Program Account</p>
+                                        <p class="text-xs text-indigo-400">(e.g., Uber Program)</p>
                                     </div>
-                                    <div class="info-card bg-emerald-50 border border-emerald-200 p-3 rounded-lg text-center" onclick="showDetails('sol-pda')">
-                                        <p class="font-bold text-emerald-800">Data Account (PDA)</p>
-                                        <p class="text-xs text-emerald-600">(e.g., Ride Info)</p>
+                                    <div class="info-card bg-emerald-800 border border-emerald-600 p-3 rounded-lg text-center" onclick="showDetails('sol-pda')">
+                                        <p class="font-bold text-emerald-200">Data Account (PDA)</p>
+                                        <p class="text-xs text-emerald-400">(e.g., Ride Info)</p>
                                     </div>
-                                     <div class="info-card bg-sky-50 border border-sky-200 p-3 rounded-lg text-center" onclick="showDetails('sol-token')">
-                                        <p class="font-bold text-sky-800">Token Program</p>
-                                        <p class="text-xs text-sky-600">(Native Program)</p>
+                                     <div class="info-card bg-sky-800 border border-sky-600 p-3 rounded-lg text-center" onclick="showDetails('sol-token')">
+                                        <p class="font-bold text-sky-200">Token Program</p>
+                                        <p class="text-xs text-sky-400">(Native Program)</p>
                                     </div>
-                                    <div class="info-card bg-rose-50 border border-rose-200 p-3 rounded-lg text-center" onclick="showDetails('sol-ata')">
-                                        <p class="font-bold text-rose-800">Token Account (ATA)</p>
-                                        <p class="text-xs text-rose-600">(Also a PDA)</p>
+                                    <div class="info-card bg-rose-800 border border-rose-600 p-3 rounded-lg text-center" onclick="showDetails('sol-ata')">
+                                        <p class="font-bold text-rose-200">Token Account (ATA)</p>
+                                        <p class="text-xs text-rose-400">(Also a PDA)</p>
                                     </div>
                                 </div>
                             </div>
@@ -120,20 +163,20 @@
                     </div>
                     <!-- Ethereum Column -->
                     <div>
-                        <h3 class="text-2xl font-bold text-center mb-4 text-slate-800">Ethereum</h3>
-                        <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200 min-h-[400px]">
-                            <p class="text-center mb-4 font-medium text-slate-600">"Two types of accounts"</p>
-                            <!-- Ethereum Account Diagram - Directly in HTML -->
-                            <div class="relative p-4 border-2 border-dashed border-slate-300 rounded-lg">
-                                <span class="absolute -top-3 left-4 bg-white px-2 font-bold text-slate-500">Ethereum World State</span>
+                        <h3 class="text-2xl font-bold text-center mb-4 text-gray-100">Ethereum</h3>
+                        <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 min-h-[400px]">
+                            <p class="text-center mb-4 font-medium text-gray-300">"Two types of accounts"</p>
+                            <!-- Ethereum Account Diagram -->
+                            <div class="relative p-4 border-2 border-dashed border-gray-600 rounded-lg">
+                                <span class="absolute -top-3 left-4 bg-gray-800 px-2 font-bold text-gray-400">Ethereum World State</span>
                                 <div class="space-y-4">
-                                    <div class="info-card bg-amber-50 border border-amber-200 p-3 rounded-lg text-center" onclick="showDetails('eth-eoa')">
-                                        <p class="font-bold text-amber-800">Externally Owned Account (EOA)</p>
-                                        <p class="text-xs text-amber-600">(User Wallet)</p>
+                                    <div class="info-card bg-amber-800 border border-amber-600 p-3 rounded-lg text-center" onclick="showDetails('eth-eoa')">
+                                        <p class="font-bold text-amber-200">Externally Owned Account (EOA)</p>
+                                        <p class="text-xs text-amber-400">(User Wallet)</p>
                                     </div>
-                                    <div class="info-card bg-teal-50 border border-teal-200 p-3 rounded-lg text-center" onclick="showDetails('eth-contract')">
-                                        <p class="font-bold text-teal-800">Contract Account</p>
-                                        <p class="text-xs text-teal-600">(Code + Storage)</p>
+                                    <div class="info-card bg-teal-800 border border-teal-600 p-3 rounded-lg text-center" onclick="showDetails('eth-contract')">
+                                        <p class="font-bold text-teal-200">Contract Account</p>
+                                        <p class="text-xs text-teal-400">(Code + Storage)</p>
                                     </div>
                                 </div>
                             </div>
@@ -141,47 +184,46 @@
                     </div>
                 </div>
                 <!-- Details Pane -->
-                <div id="accounts-details" class="mt-8 bg-white p-6 rounded-xl shadow-lg border border-slate-200">
-                    <p class="text-center text-slate-500">Click an item above to see details.</p>
+                <div id="accounts-details" class="mt-8 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                    <p class="text-center text-gray-400">Click an item above to see details.</p>
                 </div>
             </section>
 
             <!-- Transactions Tab -->
             <section id="transactions-tab" class="tab-content hidden">
                  <div class="text-center mb-8">
-                    <h2 class="text-3xl font-bold text-slate-800">Execution & Transactions</h2>
-                    <p class="mt-2 text-slate-500 max-w-2xl mx-auto">How instructions are bundled and executed differs significantly, impacting developers and users.</p>
+                    <h2 class="text-3xl font-bold text-gray-100">Execution & Transactions</h2>
+                    <p class="mt-2 text-gray-400 max-w-2xl mx-auto">How instructions are bundled and executed differs significantly, impacting developers and users.</p>
                 </div>
                 <div class="grid md:grid-cols-2 gap-8">
                     <!-- Solana Column -->
                     <div>
-                        <h3 class="text-2xl font-bold text-center mb-4 text-slate-800">Solana</h3>
-                        <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
+                        <h3 class="text-2xl font-bold text-center mb-4 text-gray-100">Solana</h3>
+                        <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
                             <h4 class="font-bold text-lg mb-2">Transaction Model</h4>
-                            <p class="mb-4">A transaction is a bundle of one or more atomic <span class="font-semibold text-indigo-600">instructions</span>. All instructions succeed or fail together.</p>
+                            <p class="mb-4 text-gray-300">A transaction is a bundle of one or more atomic <span class="font-semibold text-indigo-400">instructions</span>. All instructions succeed or fail together.</p>
                             <div class="space-y-2">
-                                <div class="bg-slate-100 p-3 rounded-md"><strong>Instruction 1:</strong> Create a data account (PDA) for a user.</div>
-                                <div class="bg-slate-100 p-3 rounded-md"><strong>Instruction 2:</strong> Initialize data in that account.</div>
-                                <div class="bg-slate-100 p-3 rounded-md"><strong>Instruction 3:</strong> Transfer SOL to the new account for rent.</div>
+                                <div class="bg-gray-700 p-3 rounded-md"><strong>Instruction 1:</strong> Create a data account (PDA) for a user.</div>
+                                <div class="bg-gray-700 p-3 rounded-md"><strong>Instruction 2:</strong> Initialize data in that account.</div>
+                                <div class="bg-gray-700 p-3 rounded-md"><strong>Instruction 3:</strong> Transfer SOL to the new account for rent.</div>
                             </div>
-                             <p class="mt-4 text-sm text-slate-500">This atomicity allows for complex, multi-step operations in a single, secure transaction.</p>
+                             <p class="mt-4 text-sm text-gray-400">This atomicity allows for complex, multi-step operations in a single, secure transaction.</p>
                         </div>
                     </div>
                     <!-- Ethereum Column -->
                     <div>
-                        <h3 class="text-2xl font-bold text-center mb-4 text-slate-800">Ethereum</h3>
-                         <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
+                        <h3 class="text-2xl font-bold text-center mb-4 text-gray-100">Ethereum</h3>
+                         <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
                             <h4 class="font-bold text-lg mb-2">Transaction Object</h4>
-                            <p class="mb-4">A transaction is a single message from an EOA to another account, containing key fields.</p>
-                            <ul class="list-disc list-inside space-y-1 text-slate-600">
+                            <p class="mb-4 text-gray-300">A transaction is a single message from an EOA to another account, containing key fields.</p>
+                            <ul class="list-disc list-inside space-y-1 text-gray-300">
                                 <li><span class="font-semibold">To:</span> Contract or EOA address.</li>
                                 <li><span class="font-semibold">Value:</span> Amount of ETH to send.</li>
                                 <li><span class="font-semibold">Data:</span> Encoded function call and arguments.</li>
                                 <li><span class="font-semibold">Gas Limit/Price:</span> Fee parameters.</li>
                                 <li><span class="font-semibold">Nonce:</span> Transaction counter.</li>
-                                <li><span class="font-semibold">Value:</span> (Optional) ETH to send.</li>
                             </ul>
-                            <p class="mt-4 text-sm text-slate-500">The EVM executes the code based on the `data` field, modifying the contract's internal storage.</p>
+                            <p class="mt-4 text-sm text-gray-400">The EVM executes the code based on the `data` field, modifying the contract's internal storage.</p>
                         </div>
                     </div>
                 </div>
@@ -190,23 +232,28 @@
             <!-- Development Tab -->
             <section id="development-tab" class="tab-content hidden">
                 <div class="text-center mb-8">
-                    <h2 class="text-3xl font-bold text-slate-800">dApp Development Concepts</h2>
-                    <p class="mt-2 text-slate-500 max-w-2xl mx-auto">Key tools and concepts for building frontends that interact with blockchains.</p>
+                    <h2 class="text-3xl font-bold text-gray-100">dApp Development Concepts</h2>
+                    <p class="mt-2 text-gray-400 max-w-2xl mx-auto">Key tools and concepts for building frontends that interact with blockchains.</p>
                 </div>
                  <div class="grid md:grid-cols-2 gap-8">
                     <!-- General Frontend Concepts -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
-                        <h3 class="text-xl font-bold mb-4 text-gray-700">React Hooks: `useState` & `useEffect`</h3>
-                        <p class="mb-4 text-slate-600">These are the building blocks of modern React applications for managing state and side effects.</p>
-                        <div class="p-4 bg-slate-100 rounded-lg">
-                            <p class="font-semibold text-slate-800">`useState`</p>
-                            <p class="text-sm text-slate-600 mb-2">Manages component data. When state changes, the component re-renders.</p>
-                            <p class="font-semibold text-slate-800">`useEffect`</p>
-                            <p class="text-sm text-slate-600">Handles side effects like data fetching or subscriptions after the component renders.</p>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                        <h3 class="text-xl font-bold mb-4 text-gray-100">React Hooks: `useState` & `useEffect`</h3>
+                        <p class="mb-4 text-gray-300">These are the building blocks of modern React applications for managing state and side effects.</p>
+                        <div class="p-4 bg-gray-700 rounded-lg">
+                            <p class="font-semibold text-gray-200">`useState`</p>
+                            <p class="text-sm text-gray-300 mb-2">Manages component data. When state changes, the component re-renders.</p>
+                            <p class="font-semibold text-gray-200">`useEffect`</p>
+                            <p class="text-sm text-gray-300">Handles side effects like data fetching or subscriptions after the component renders.</p>
                         </div>
                         <div class="mt-4">
                             <h4 class="font-semibold mb-2">Example: Fetching Data</h4>
-                            <pre class="code-block"><code>const [data, setData] = useState([]);
+                            <div class="collapsible-header" onclick="toggleCode('react-fetch-code')">
+                                <span>Show Code</span>
+                                <span class="arrow-icon">></span>
+                            </div>
+                            <div id="react-fetch-code" class="collapsible-content">
+                                <pre class="code-block-container"><code>const [data, setData] = useState([]);
 
 useEffect(() => {
   // Runs once after initial render
@@ -214,15 +261,21 @@ useEffect(() => {
     .then(res => res.json())
     .then(json => setData(json));
 }, []); // Empty array means run once</code></pre>
+                            </div>
                         </div>
                     </div>
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
-                        <h3 class="text-xl font-bold mb-4 text-gray-700">Ethereum: ABI</h3>
-                        <p class="mb-4 text-slate-600">The &lt;span class="font-semibold text-teal-600"&gt;Application Binary Interface (ABI)&lt;/span&gt; is the "API documentation" for an Ethereum smart contract.</p>
-                        <p class="mb-4 text-slate-600">It's a JSON file that defines how to call contract functions and interpret their data, enabling tools and UIs to interact with them.</p>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                        <h3 class="text-xl font-bold mb-4 text-gray-100">Ethereum: ABI</h3>
+                        <p class="mb-4 text-gray-300">The &lt;span class="font-semibold text-teal-400"&gt;Application Binary Interface (ABI)&lt;/span&gt; is the "API documentation" for an Ethereum smart contract.</p>
+                        <p class="mb-4 text-gray-300">It's a JSON file that defines how to call contract functions and interpret their data, enabling tools and UIs to interact with them.</p>
                         <div class="mt-4">
                             <h4 class="font-semibold mb-2">Example ABI Snippet for `add(uint a, uint b)`</h4>
-                            <pre class="code-block"><code>{
+                            <div class="collapsible-header" onclick="toggleCode('eth-abi-code')">
+                                <span>Show Code</span>
+                                <span class="arrow-icon">></span>
+                            </div>
+                            <div id="eth-abi-code" class="collapsible-content">
+                                <pre class="code-block-container"><code>{
   &quot;inputs&quot;: [
     { &quot;name&quot;: &quot;a&quot;, &quot;type&quot;: &quot;uint256&quot; },
     { &quot;name&quot;: &quot;b&quot;, &quot;type&quot;: &quot;uint256&quot; }
@@ -234,39 +287,285 @@ useEffect(() => {
   &quot;stateMutability&quot;: &quot;pure&quot;,
   &quot;type&quot;: &quot;function&quot;
 }</code></pre>
+                            </div>
                         </div>
                     </div>
                     
                     <!-- Solana Frontend Section -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200 md:col-span-2">
-                        <h3 class="text-2xl font-bold mb-4 text-purple-600">Solana Frontend Development</h3>
-                        <p class="mb-4 text-slate-600">This section would typically contain code examples for connecting to Solana wallets, sending SOL, requesting airdrops, and signing messages using `@solana/web3.js` and wallet adapter libraries.</p>
-                        <p class="mb-4 text-slate-600">These examples demonstrate how a Web2 frontend interacts with the Solana blockchain via RPCs, enabling users to perform on-chain actions.</p>
-                        <p class="text-sm text-slate-500">Example code snippets for these functionalities would be displayed here.</p>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 md:col-span-2">
+                        <h3 class="text-2xl font-bold mb-4 text-purple-400">Solana Frontend Development</h3>
+                        <p class="mb-4 text-gray-300">This section would typically contain code examples for connecting to Solana wallets, sending SOL, requesting airdrops, and signing messages using `@solana/web3.js` and wallet adapter libraries.</p>
+                        <p class="mb-4 text-gray-300">These examples demonstrate how a Web2 frontend interacts with the Solana blockchain via RPCs, enabling users to perform on-chain actions.</p>
+                        <div class="mt-4">
+                            <h4 class="font-semibold mb-2">Example: Connect Wallet (Solana)</h4>
+                            <div class="collapsible-header" onclick="toggleCode('sol-connect-code')">
+                                <span>Show Code</span>
+                                <span class="arrow-icon">></span>
+                            </div>
+                            <div id="sol-connect-code" class="collapsible-content">
+                                <pre class="code-block-container"><code>import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
+import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
+import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { clusterApiUrl } from '@solana/web3.js';
+
+function App() {
+  const network = WalletAdapterNetwork.Devnet;
+  const endpoint = clusterApiUrl(network);
+  const wallets = [new PhantomWalletAdapter()];
+
+  return (
+    &lt;ConnectionProvider endpoint={endpoint}&gt;
+      &lt;WalletProvider wallets={wallets} autoConnect&gt;
+        &lt;WalletModalProvider&gt;
+          &lt;WalletMultiButton /&gt;
+          {/* Your dApp content here */}
+        &lt;/WalletModalProvider&gt;
+      &lt;/WalletProvider&gt;
+    &lt;/ConnectionProvider&gt;
+  );
+}</code></pre>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <h4 class="font-semibold mb-2">Example: Send SOL (Solana)</h4>
+                            <div class="collapsible-header" onclick="toggleCode('sol-send-code')">
+                                <span>Show Code</span>
+                                <span class="arrow-icon">></span>
+                            </div>
+                            <div id="sol-send-code" class="collapsible-content">
+                                <pre class="code-block-container"><code>import { useConnection, useWallet } from &quot;@solana/wallet-adapter-react&quot;;
+import { LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction } from &quot;@solana/web3.js&quot;;
+
+function SendTokens() {
+  const wallet = useWallet();
+  const {connection} = useConnection();
+
+  async function sendTokens() {
+    const to = &quot;RecipientPublicKeyHere&quot;; // Replace with actual recipient
+    const amount = 1; // Amount in SOL
+
+    if (!wallet.publicKey) return;
+
+    const transaction = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: wallet.publicKey,
+        toPubkey: new PublicKey(to),
+        lamports: amount * LAMPORTS_PER_SOL,
+      })
+    );
+    await wallet.sendTransaction(transaction, connection);
+    console.log(&quot;Sent &quot; + amount + &quot; SOL to &quot; + to);
+  }
+  return &lt;button onClick={() =&gt; sendTokens()}&gt;Send SOL&lt;/button&gt;;
+}</code></pre>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <h4 class="font-semibold mb-2">Example: Request Airdrop (Solana)</h4>
+                            <div class="collapsible-header" onclick="toggleCode('sol-airdrop-code')">
+                                <span>Show Code</span>
+                                <span class="arrow-icon">></span>
+                            </div>
+                            <div id="sol-airdrop-code" class="collapsible-content">
+                                <pre class="code-block-container"><code>import { useConnection, useWallet } from &quot;@solana/wallet-adapter-react&quot;;
+import { LAMPORTS_PER_SOL } from &quot;@solana/web3.js&quot;;
+
+function RequestAirdrop() {
+  const wallet = useWallet();
+  const { connection } = useConnection();
+
+  async function requestAirdrop() {
+    const amount = 2; // Amount in SOL
+    if (!wallet.publicKey) return;
+    await connection.requestAirdrop(wallet.publicKey, amount * LAMPORTS_PER_SOL);
+    console.log(&quot;Airdropped &quot; + amount + &quot; SOL&quot;);
+  }
+  return &lt;button onClick={() =&gt; requestAirdrop()}&gt;Request Airdrop&lt;/button&gt;;
+}</code></pre>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <h4 class="font-semibold mb-2">Example: Sign Message (Solana)</h4>
+                            <div class="collapsible-header" onclick="toggleCode('sol-sign-code')">
+                                <span>Show Code</span>
+                                <span class="arrow-icon">></span>
+                            </div>
+                            <div id="sol-sign-code" class="collapsible-content">
+                                <pre class="code-block-container"><code>import { useWallet } from &apos;@solana/wallet-adapter-react&apos;;
+import { ed25519 } from &apos;@noble/curves/ed25519&apos;;
+import bs58 from &apos;bs58&apos;;
+
+function SignMessage() {
+  const { publicKey, signMessage } = useWallet();
+
+  async function onClick() {
+    if (!publicKey || !signMessage) return;
+    const message = &quot;Hello Solana!&quot;;
+    const encodedMessage = new TextEncoder().encode(message);
+    const signature = await signMessage(encodedMessage);
+    if (!ed25519.verify(signature, encodedMessage, publicKey.toBytes())) {
+      throw new Error(&apos;Message signature invalid!&apos;);
+    }
+    console.log(`Signature: ${bs58.encode(signature)}`);
+  }
+  return &lt;button onClick={() =&gt; onClick()}&gt;Sign Message&lt;/button&gt;;
+}</code></pre>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Ethereum Frontend Section -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200 md:col-span-2">
-                        <h3 class="text-2xl font-bold mb-4 text-blue-600">Ethereum Frontend Development</h3>
-                        <p class="mb-4 text-slate-600">This section would typically contain code examples for connecting to Ethereum wallets (like MetaMask), sending ETH, fetching balances, and interacting with smart contracts using `ethers.js` or `web3.js`.</p>
-                        <p class="mb-4 text-slate-600">These examples showcase how a Web2 frontend communicates with the Ethereum Virtual Machine (EVM) to enable decentralized application functionalities.</p>
-                        <p class="text-sm text-slate-500">Example code snippets for these functionalities would be displayed here.</p>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 md:col-span-2">
+                        <h3 class="text-2xl font-bold mb-4 text-blue-400">Ethereum Frontend Development</h3>
+                        <p class="mb-4 text-gray-300">Connect to EVM chains and interact with contracts using `ethers.js`. These snippets demonstrate core functionalities.</p>
+                        <div class="mt-4">
+                            <h4 class="font-semibold mb-2">Example: Connect Wallet (Ethereum)</h4>
+                            <div class="collapsible-header" onclick="toggleCode('eth-connect-code')">
+                                <span>Show Code</span>
+                                <span class="arrow-icon">></span>
+                            </div>
+                            <div id="eth-connect-code" class="collapsible-content">
+                                <pre class="code-block-container"><code>// Requires a wallet like MetaMask to be installed in the browser
+async function connectWalletEth() {
+  if (typeof window.ethereum !== &apos;undefined&apos;) {
+    try {
+      // Request account access
+      await window.ethereum.request({ method: &apos;eth_requestAccounts&apos; });
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const address = await signer.getAddress();
+      console.log(&quot;Connected Ethereum address:&quot;, address);
+    } catch (error) {
+      console.error(&quot;User denied account access or other error:&quot;, error);
+    }
+  } else {
+    console.log(&apos;MetaMask or other Web3 wallet not detected.&apos;);
+  }
+}
+// To use: &lt;button onclick=&quot;connectWalletEth()&quot;&gt;Connect ETH Wallet&lt;/button&gt;</code></pre>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <h4 class="font-semibold mb-2">Example: Send ETH (Ethereum)</h4>
+                            <div class="collapsible-header" onclick="toggleCode('eth-send-code')">
+                                <span>Show Code</span>
+                                <span class="arrow-icon">></span>
+                            </div>
+                            <div id="eth-send-code" class="collapsible-content">
+                                <pre class="code-block-container"><code>// Requires a connected wallet and ethers.js loaded
+async function sendEth() {
+  if (typeof window.ethereum === &apos;undefined&apos; || !window.ethereum.selectedAddress) {
+    console.log(&quot;Ethereum wallet not connected.&quot;);
+    return;
+  }
+
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const toAddress = &quot;0xRecipientAddressHere&quot;; // Replace with actual recipient
+  const amountEth = &quot;0.001&quot;; // Amount in ETH
+
+  try {
+    const tx = {
+      to: toAddress,
+      value: ethers.utils.parseEther(amountEth) // Converts ETH to Wei
+    };
+    const transactionResponse = await signer.sendTransaction(tx);
+    console.log(&quot;Transaction sent:&quot;, transactionResponse.hash);
+    await transactionResponse.wait(); // Wait for transaction to be mined
+    console.log(&quot;Transaction confirmed!&quot;);
+  } catch (error) {
+    console.error(&quot;Failed to send ETH:&quot;, error);
+  }
+}
+// To use: &lt;button onclick=&quot;sendEth()&quot;&gt;Send ETH&lt;/button&gt;</code></pre>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <h4 class="font-semibold mb-2">Example: Get ETH Balance (Ethereum)</h4>
+                            <div class="collapsible-header" onclick="toggleCode('eth-balance-code')">
+                                <span>Show Code</span>
+                                <span class="arrow-icon">></span>
+                            </div>
+                            <div id="eth-balance-code" class="collapsible-content">
+                                <pre class="code-block-container"><code>// Requires a connected wallet and ethers.js loaded
+async function getEthBalance() {
+  if (typeof window.ethereum === &apos;undefined&apos; || !window.ethereum.selectedAddress) {
+    console.log(&quot;Ethereum wallet not detected.&quot;);
+    return;
+  }
+
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const address = window.ethereum.selectedAddress;
+  try {
+    const balanceWei = await provider.getBalance(address);
+    const balanceEth = ethers.utils.formatEther(balanceWei);
+    console.log(`ETH Balance of ${address.slice(0, 6)}...: ${balanceEth} ETH`);
+  } catch (error) {
+    console.error(&quot;Failed to get ETH balance:&quot;, error);
+  }
+}
+// To use: &lt;button onclick=&quot;getEthBalance()&quot;&gt;Get ETH Balance&lt;/button&gt;</code></pre>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <h4 class="font-semibold mb-2">Example: Interact with Contract (Ethereum)</h4>
+                            <div class="collapsible-header" onclick="toggleCode('eth-contract-code')">
+                                <span>Show Code</span>
+                                <span class="arrow-icon">></span>
+                            </div>
+                            <div id="eth-contract-code" class="collapsible-content">
+                                <pre class="code-block-container"><code>// Requires a connected wallet, ethers.js, and contract ABI/address
+async function callEthContract() {
+  if (typeof window.ethereum === &apos;undefined&apos; || !window.ethereum.selectedAddress) {
+    console.log(&quot;Ethereum wallet not connected.&quot;);
+    return;
+  }
+
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const contractAddress = &quot;0xYourContractAddress&quot;; // Replace with actual contract address
+  const contractABI = [ /* Your contract ABI here */ ]; // Replace with actual ABI
+
+  try {
+    const contract = new ethers.Contract(contractAddress, contractABI, signer);
+    // Example: Call a &apos;set&apos; function
+    const tx = await contract.set(123); // Calling a function that writes to state
+    console.log(&quot;Contract transaction sent:&quot;, tx.hash);
+    await tx.wait();
+    console.log(&quot;Contract transaction confirmed!&quot;);
+
+    // Example: Call a &apos;get&apos; function (read-only)
+    const value = await contract.get(); // Calling a function that reads state
+    console.log(&quot;Value from contract:&quot;, value.toString());
+  } catch (error) {
+    console.error(&quot;Contract interaction failed:&quot;, error);
+  }
+}
+// To use: &lt;button onclick=&quot;callEthContract()&quot;&gt;Call ETH Contract&lt;/button&gt;</code></pre>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
             <!-- New Solidity Fundamentals Tab -->
             <section id="solidity-tab" class="tab-content hidden">
                 <div class="text-center mb-8">
-                    <h2 class="text-3xl font-bold text-slate-800">📜 Solidity Fundamentals</h2>
-                    <p class="mt-2 text-slate-500 max-w-2xl mx-auto">Dive into the basics of Solidity, the primary language for writing smart contracts on Ethereum.</p>
+                    <h2 class="text-3xl font-bold text-gray-100">📜 Solidity Fundamentals</h2>
+                    <p class="mt-2 text-gray-400 max-w-2xl mx-auto">Dive into the basics of Solidity, the primary language for writing smart contracts on Ethereum.</p>
                 </div>
                 <div class="grid md:grid-cols-2 gap-8">
                     <!-- Solidity Basics -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
-                        <h3 class="text-xl font-bold mb-4 text-gray-700">Solidity Basics: Version, Contract, Variables</h3>
-                        <p class="mb-4 text-slate-600">Every Solidity file starts with a version pragma and defines contracts, which are the fundamental building blocks.</p>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                        <h3 class="text-xl font-bold mb-4 text-gray-100">Solidity Basics: Version, Contract, Variables</h3>
+                        <p class="mb-4 text-gray-300">Every Solidity file starts with a version pragma and defines contracts, which are the fundamental building blocks.</p>
                         <h4 class="font-semibold mb-2">Example: Simple Contract with Variables</h4>
-                        <pre class="code-block"><code>// SPDX-License-Identifier: MIT
+                        <div class="collapsible-header" onclick="toggleCode('solidity-basics-code')">
+                            <span>Show Code</span>
+                            <span class="arrow-icon">></span>
+                        </div>
+                        <div id="solidity-basics-code" class="collapsible-content">
+                            <pre class="code-block-container"><code>// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0; // Version pragma
 
 contract MyFirstContract { // Contract keyword
@@ -285,13 +584,19 @@ contract MyFirstContract { // Contract keyword
     myString = &quot;Hello Solidity!&quot;;
   }
 }</code></pre>
+                        </div>
                     </div>
                     <!-- Functions -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
-                        <h3 class="text-xl font-bold mb-4 text-gray-700">Functions: Arguments, Returns, Visibility</h3>
-                        <p class="mb-4 text-slate-600">Functions define the logic and behavior of your smart contract. Visibility keywords control who can call them.</p>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                        <h3 class="text-xl font-bold mb-4 text-gray-100">Functions: Arguments, Returns, Visibility</h3>
+                        <p class="mb-4 text-gray-300">Functions define the logic and behavior of your smart contract. Visibility keywords control who can call them.</p>
                         <h4 class="font-semibold mb-2">Example: Calculator Functions</h4>
-                        <pre class="code-block"><code>contract Calculator {
+                        <div class="collapsible-header" onclick="toggleCode('solidity-functions-code')">
+                            <span>Show Code</span>
+                            <span class="arrow-icon">></span>
+                        </div>
+                        <div id="solidity-functions-code" class="collapsible-content">
+                            <pre class="code-block-container"><code>contract Calculator {
   uint256 public currentValue;
 
   constructor(uint256 _initialValue) {
@@ -319,23 +624,35 @@ contract MyFirstContract { // Contract keyword
     return currentValue;
   }
 }</code></pre>
+                        </div>
                     </div>
                     <!-- Control Flow -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200 md:col-span-2">
-                        <h3 class="text-xl font-bold mb-4 text-gray-700">Control Flow: `require`, `if/else`, Loops</h3>
-                        <p class="mb-4 text-slate-600">Solidity provides standard control flow mechanisms to manage logic and validate conditions.</p>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 md:col-span-2">
+                        <h3 class="text-xl font-bold mb-4 text-gray-100">Control Flow: `require`, `if/else`, Loops</h3>
+                        <p class="mb-4 text-gray-300">Solidity provides standard control flow mechanisms to manage logic and validate conditions.</p>
                         <div class="grid md:grid-cols-2 gap-6">
                             <div>
                                 <h4 class="font-semibold mb-2">`require` Statement</h4>
-                                <pre class="code-block"><code>function setNumber(uint256 _number) public {
+                                <div class="collapsible-header" onclick="toggleCode('solidity-require-code')">
+                                    <span>Show Code</span>
+                                    <span class="arrow-icon">></span>
+                                </div>
+                                <div id="solidity-require-code" class="collapsible-content">
+                                    <pre class="code-block-container"><code>function setNumber(uint256 _number) public {
   // Use `require` to ensure the number is positive
   require(_number &gt; 0, &quot;Number must be greater than zero&quot;);
   // storedNumber = _number; // Assuming storedNumber exists
 }</code></pre>
+                                </div>
                             </div>
                             <div>
                                 <h4 class="font-semibold mb-2">`if/else` and Loops</h4>
-                                <pre class="code-block"><code>function categorizeNumber(uint256 _number) public pure returns (string memory) {
+                                <div class="collapsible-header" onclick="toggleCode('solidity-if-else-code')">
+                                    <span>Show Code</span>
+                                    <span class="arrow-icon">></span>
+                                </div>
+                                <div id="solidity-if-else-code" class="collapsible-content">
+                                    <pre class="code-block-container"><code>function categorizeNumber(uint256 _number) public pure returns (string memory) {
   if (_number &lt; 10) {
     return &quot;Small&quot;;
   } else if (_number &gt;= 10 &amp;&amp; _number &lt; 100) {
@@ -352,17 +669,23 @@ function addNumbers(uint256[] memory _numbers) public pure returns (uint) {
   }
   return ans;
 }</code></pre>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <!-- Mappings & Arrays -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200 md:col-span-2">
-                        <h3 class="text-xl font-bold mb-4 text-gray-700">Data Structures: Mappings & Arrays</h3>
-                        <p class="mb-4 text-slate-600">Mappings are like hash tables, and arrays can be fixed or dynamic in size.</p>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 md:col-span-2">
+                        <h3 class="text-xl font-bold mb-4 text-gray-100">Data Structures: Mappings & Arrays</h3>
+                        <p class="mb-4 text-gray-300">Mappings are like hash tables, and arrays can be fixed or dynamic in size.</p>
                         <div class="grid md:grid-cols-2 gap-6">
                             <div>
                                 <h4 class="font-semibold mb-2">Mappings Example</h4>
-                                <pre class="code-block"><code>contract NameRegistry {
+                                <div class="collapsible-header" onclick="toggleCode('solidity-mappings-code')">
+                                    <span>Show Code</span>
+                                    <span class="arrow-icon">></span>
+                                </div>
+                                <div id="solidity-mappings-code" class="collapsible-content">
+                                    <pre class="code-block-container"><code>contract NameRegistry {
   mapping(address =&gt; string) public names; // Declare a mapping
 
   function setName(string memory _name) public {
@@ -373,10 +696,16 @@ function addNumbers(uint256[] memory _numbers) public pure returns (uint) {
     return names[_address]; // Get from a mapping
   }
 }</code></pre>
+                                </div>
                             </div>
                             <div>
                                 <h4 class="font-semibold mb-2">Arrays Example</h4>
-                                <pre class="code-block"><code>contract ArrayExample {
+                                <div class="collapsible-header" onclick="toggleCode('solidity-arrays-code')">
+                                    <span>Show Code</span>
+                                    <span class="arrow-icon">></span>
+                                </div>
+                                <div id="solidity-arrays-code" class="collapsible-content">
+                                    <pre class="code-block-container"><code>contract ArrayExample {
   uint[3] public fixedNumbers; // Fixed-size array
   uint[] public dynamicNumbers; // Dynamic array
 
@@ -394,15 +723,21 @@ function addNumbers(uint256[] memory _numbers) public pure returns (uint) {
     return dynamicNumbers.length;
   }
 }</code></pre>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <!-- Structs -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200 md:col-span-2">
-                        <h3 class="text-xl font-bold mb-4 text-gray-700">Structs: Custom Data Types</h3>
-                        <p class="mb-4 text-slate-600">Structs allow you to group multiple variables of different types into a single unit.</p>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 md:col-span-2">
+                        <h3 class="text-xl font-bold mb-4 text-gray-100">Structs: Custom Data Types</h3>
+                        <p class="mb-4 text-gray-300">Structs allow you to group multiple variables of different types into a single unit.</p>
                         <h4 class="font-semibold mb-2">Example: Person Struct</h4>
-                        <pre class="code-block"><code>contract PersonContract {
+                        <div class="collapsible-header" onclick="toggleCode('solidity-structs-code')">
+                            <span>Show Code</span>
+                            <span class="arrow-icon">></span>
+                        </div>
+                        <div id="solidity-structs-code" class="collapsible-content">
+                            <pre class="code-block-container"><code>contract PersonContract {
   struct Person {
     string name;
     uint age;
@@ -424,48 +759,72 @@ function addNumbers(uint256[] memory _numbers) public pure returns (uint) {
     return (person.name, person.age, person.addr);
   }
 }</code></pre>
+                        </div>
                     </div>
                     <!-- Memory vs Stack vs Storage -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200 md:col-span-2">
-                        <h3 class="text-xl font-bold mb-4 text-gray-700">Data Locations: `memory`, `stack`, `storage`</h3>
-                        <p class="mb-4 text-slate-600">Solidity has distinct data locations with different characteristics and gas costs.</p>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 md:col-span-2">
+                        <h3 class="text-xl font-bold mb-4 text-gray-100">Data Locations: `memory`, `stack`, `storage`</h3>
+                        <p class="mb-4 text-gray-300">Solidity has distinct data locations with different characteristics and gas costs.</p>
                         <div class="grid md:grid-cols-2 gap-6">
                             <div>
                                 <h4 class="font-semibold mb-2">`storage` (Persistent)</h4>
-                                <p class="text-sm text-slate-600 mb-2">Persistent data on the blockchain (state variables). Costly to write.</p>
-                                <pre class="code-block"><code>contract StorageExample {
+                                <p class="text-sm text-gray-300 mb-2">Persistent data on the blockchain (state variables). Costly to write.</p>
+                                <div class="collapsible-header" onclick="toggleCode('solidity-storage-code')">
+                                    <span>Show Code</span>
+                                    <span class="arrow-icon">></span>
+                                </div>
+                                <div id="solidity-storage-code" class="collapsible-content">
+                                    <pre class="code-block-container"><code>contract StorageExample {
   uint[] public numbers; // Stored in storage
 
   function addNumber(uint _number) public {
     numbers.push(_number); // Modifies storage
   }
 }</code></pre>
+                                </div>
                             </div>
                             <div>
                                 <h4 class="font-semibold mb-2">`memory` (Temporary, Function Scope)</h4>
-                                <p class="text-sm text-slate-600 mb-2">Temporary data during function execution. Cheaper than storage. Used for function arguments (complex types) and local variables (complex types).</p>
-                                <pre class="code-block"><code>function addStrings(string memory a, string memory b) public pure returns (string memory) {
+                                <p class="text-sm text-gray-300 mb-2">Temporary data during function execution. Cheaper than storage. Used for function arguments (complex types) and local variables (complex types).</p>
+                                <div class="collapsible-header" onclick="toggleCode('solidity-memory-code')">
+                                    <span>Show Code</span>
+                                    <span class="arrow-icon">></span>
+                                </div>
+                                <div id="solidity-memory-code" class="collapsible-content">
+                                    <pre class="code-block-container"><code>function addStrings(string memory a, string memory b) public pure returns (string memory) {
   string memory result = string(abi.encodePacked(a, b)); // &apos;result&apos; is in memory
   return result;
 }</code></pre>
+                                </div>
                             </div>
                             <div class="md:col-span-2">
                                 <h4 class="font-semibold mb-2">`stack` (Temporary, Small Values)</h4>
-                                <p class="text-sm text-slate-600 mb-2">Very small, temporary values (function arguments for simple types, local variables for simple types). Cleared after function execution.</p>
-                                <pre class="code-block"><code>function addNumbers(uint a, uint b) public pure returns (uint) {
+                                <p class="text-sm text-gray-300 mb-2">Very small, temporary values (function arguments for simple types, local variables for simple types). Cleared after function execution.</p>
+                                <div class="collapsible-header" onclick="toggleCode('solidity-stack-code')">
+                                    <span>Show Code</span>
+                                    <span class="arrow-icon">></span>
+                                </div>
+                                <div id="solidity-stack-code" class="collapsible-content">
+                                    <pre class="code-block-container"><code>function addNumbers(uint a, uint b) public pure returns (uint) {
   // &apos;a&apos;, &apos;b&apos;, and &apos;result&apos; are stored on the stack
   uint result = a + b;
   return result;
 }</code></pre>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <!-- Modifiers -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
-                        <h3 class="text-xl font-bold mb-4 text-gray-700">Modifiers: Reusable Function Logic</h3>
-                        <p class="mb-4 text-slate-600">Modifiers allow you to add reusable checks or functionality to functions.</p>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                        <h3 class="text-xl font-bold mb-4 text-gray-100">Modifiers: Reusable Function Logic</h3>
+                        <p class="mb-4 text-gray-300">Modifiers allow you to add reusable checks or functionality to functions.</p>
                         <h4 class="font-semibold mb-2">Example: `onlyOwner` Modifier</h4>
-                        <pre class="code-block"><code>contract Example {
+                        <div class="collapsible-header" onclick="toggleCode('solidity-modifiers-code')">
+                            <span>Show Code</span>
+                            <span class="arrow-icon">></span>
+                        </div>
+                        <div id="solidity-modifiers-code" class="collapsible-content">
+                            <pre class="code-block-container"><code>contract Example {
   address public owner;
 
   constructor() {
@@ -481,22 +840,34 @@ function addNumbers(uint256[] memory _numbers) public pure returns (uint) {
     owner = newOwner;
   }
 }</code></pre>
+                        </div>
                     </div>
                     <!-- Returning Tuples & Pure Functions -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
-                        <h3 class="text-xl font-bold mb-4 text-gray-700">Returning Tuples & Pure Functions</h3>
-                        <p class="mb-4 text-slate-600">Functions can return multiple values (tuples). `pure` functions do not read or modify state.</p>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                        <h3 class="text-xl font-bold mb-4 text-gray-100">Returning Tuples & Pure Functions</h3>
+                        <p class="mb-4 text-gray-300">Functions can return multiple values (tuples). `pure` functions do not read or modify state.</p>
                         <h4 class="font-semibold mb-2">Example: `sumAndMul` (Pure)</h4>
-                        <pre class="code-block"><code>function sumAndMul(uint a, uint b) public pure returns (uint, uint) {
+                        <div class="collapsible-header" onclick="toggleCode('solidity-tuples-pure-code')">
+                            <span>Show Code</span>
+                            <span class="arrow-icon">></span>
+                        </div>
+                        <div id="solidity-tuples-pure-code" class="collapsible-content">
+                            <pre class="code-block-container"><code>function sumAndMul(uint a, uint b) public pure returns (uint, uint) {
   return (a + b, a * b); // Returns a tuple
 }</code></pre>
+                        </div>
                     </div>
                     <!-- Events -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200 md:col-span-2">
-                        <h3 class="text-xl font-bold mb-4 text-gray-700">Events: Logging On-Chain Activity</h3>
-                        <p class="mb-4 text-slate-600">Events allow smart contracts to log information on the blockchain, accessible by external applications.</p>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 md:col-span-2">
+                        <h3 class="text-xl font-bold mb-4 text-gray-100">Events: Logging On-Chain Activity</h3>
+                        <p class="mb-4 text-gray-300">Events allow smart contracts to log information on the blockchain, accessible by external applications.</p>
                         <h4 class="font-semibold mb-2">Example: `Transfer` Event</h4>
-                        <pre class="code-block"><code>contract EventExample {
+                        <div class="collapsible-header" onclick="toggleCode('solidity-events-code')">
+                            <span>Show Code</span>
+                            <span class="arrow-icon">></span>
+                        </div>
+                        <div id="solidity-events-code" class="collapsible-content">
+                            <pre class="code-block-container"><code>contract EventExample {
   // Declare the event with indexed parameters for searchability
   event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -509,31 +880,37 @@ function addNumbers(uint256[] memory _numbers) public pure returns (uint) {
 
 // How external apps listen for events (conceptual)
 /*
-const web3 = new Web3(&apos;http://localhost:8545&apos;); // or ethers.js provider
+const web3 = new Web3('http://localhost:8545'); // or ethers.js provider
 const contract = new web3.eth.Contract(contractABI, contractAddress);
 
 contract.events.Transfer({
-    filter: { from: &quot;0xSenderAddress&quot; }, // Filter by indexed parameters
+    filter: { from: "0xSenderAddress" }, // Filter by indexed parameters
     fromBlock: 0
 }, function(error, event){ console.log(event); })
-.on(&quot;connected&quot;, function(str){ console.log(str); })
-.on(&apos;data&apos;, function(event){
-    console.log(&quot;Transfer from&quot;, event.returnValues.from, &quot;to&quot;, event.returnValues.to, &quot;value&quot;, event.returnValues.value);
+.on("connected", function(str){ console.log(str); })
+.on('data', function(event){
+    console.log("Transfer from", event.returnValues.from, "to", event.returnValues.to, "value", event.returnValues.value);
 })
-.on(&apos;changed&apos;, function(event){
+.on('changed', function(event){
     // Event removed from blockchain
 })
-.on(&apos;error&apos;, function(error, receipt) { // If transaction was reverted
+.on('error', function(error, receipt) { // If transaction was reverted
     console.error(error, receipt);
 });
 */</code></pre>
+                        </div>
                     </div>
                     <!-- Inheritance -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200 md:col-span-2">
-                        <h3 class="text-xl font-bold mb-4 text-gray-700">Inheritance: Reusing Contract Logic</h3>
-                        <p class="mb-4 text-slate-600">Solidity supports single inheritance, allowing contracts to inherit functionality from a base contract.</p>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 md:col-span-2">
+                        <h3 class="text-xl font-bold mb-4 text-gray-100">Inheritance: Reusing Contract Logic</h3>
+                        <p class="mb-4 text-gray-300">Solidity supports single inheritance, allowing contracts to inherit functionality from a base contract.</p>
                         <h4 class="font-semibold mb-2">Example: `Vehicle` (Base) & `Car` (Child)</h4>
-                        <pre class="code-block"><code>// Vehicle.sol (Base Contract)
+                        <div class="collapsible-header" onclick="toggleCode('solidity-inheritance-code')">
+                            <span>Show Code</span>
+                            <span class="arrow-icon">></span>
+                        </div>
+                        <div id="solidity-inheritance-code" class="collapsible-content">
+                            <pre class="code-block-container"><code>// Vehicle.sol (Base Contract)
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
@@ -568,13 +945,19 @@ contract Car is Vehicle { // Inherit from Vehicle
     return &quot;This is a car&quot;;
   }
 }</code></pre>
+                        </div>
                     </div>
                     <!-- CCI & Interfaces -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200 md:col-span-2">
-                        <h3 class="text-xl font-bold mb-4 text-gray-700">Cross-Contract Invocation (CCI) & Interfaces</h3>
-                        <p class="mb-4 text-slate-600">Contracts interact with each other via CCI. Interfaces define a contract's external functions without implementation, enabling safe interaction.</p>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 md:col-span-2">
+                        <h3 class="text-xl font-bold mb-4 text-gray-100">Cross-Contract Invocation (CCI) & Interfaces</h3>
+                        <p class="mb-4 text-gray-300">Contracts interact with each other via CCI. Interfaces define a contract's external functions without implementation, enabling safe interaction.</p>
                         <h4 class="font-semibold mb-2">Example: `ParentContract` calling `MessageContract`</h4>
-                        <pre class="code-block"><code>// MessageContract.sol (The contract to be called)
+                        <div class="collapsible-header" onclick="toggleCode('solidity-cci-code')">
+                            <span>Show Code</span>
+                            <span class="arrow-icon">></span>
+                        </div>
+                        <div id="solidity-cci-code" class="collapsible-content">
+                            <pre class="code-block-container"><code>// MessageContract.sol (The contract to be called)
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
@@ -622,13 +1005,19 @@ contract ParentContract {
     return IMessageContract(contractAddress).getMessage();
   }
 }</code></pre>
+                        </div>
                     </div>
                     <!-- Payables -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200 md:col-span-2">
-                        <h3 class="text-xl font-bold mb-4 text-gray-700">Payables: Receiving Ether</h3>
-                        <p class="mb-4 text-slate-600">`payable` functions or addresses can receive Ether (ETH) transfers.</p>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 md:col-span-2">
+                        <h3 class="text-xl font-bold mb-4 text-gray-100">Payables: Receiving Ether</h3>
+                        <p class="mb-4 text-gray-300">`payable` functions or addresses can receive Ether (ETH) transfers.</p>
                         <h4 class="font-semibold mb-2">Example: Deposit and Withdraw</h4>
-                        <pre class="code-block"><code>// SPDX-License-Identifier: MIT
+                        <div class="collapsible-header" onclick="toggleCode('solidity-payables-code')">
+                            <span>Show Code</span>
+                            <span class="arrow-icon">></span>
+                        </div>
+                        <div id="solidity-payables-code" class="collapsible-content">
+                            <pre class="code-block-container"><code>// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 contract MyContract {
@@ -649,6 +1038,146 @@ contract MyContract {
     return address(this).balance; // Get contract&apos;s own ETH balance
   }
 }</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- New ERC-20 & Tokens Tab -->
+            <section id="erc20-tab" class="tab-content hidden">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-100">💎 ERC-20 & Tokens</h2>
+                    <p class="mt-2 text-gray-400 max-w-2xl mx-auto">Understanding fungible tokens on Ethereum: ERC-20 standard, how balances are managed, and common token operations.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Token Basics -->
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                        <h3 class="text-xl font-bold mb-4 text-gray-100">What is a Token?</h3>
+                        <p class="mb-4 text-gray-300">A fungible token is a type of currency on the blockchain with specific properties.</p>
+                        <ul class="list-disc list-inside space-y-1 text-gray-300">
+                            <li>It is a type of currency.</li>
+                            <li>It has an owner/issuer/minter.</li>
+                            <li>There is a mapping of which address owns how much of the token.</li>
+                            <li>Addresses should be allowed to transfer tokens to other addresses.</li>
+                        </ul>
+                    </div>
+                    <!-- Balance Storage -->
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                        <h3 class="text-xl font-bold mb-4 text-gray-100">Where are Balances Stored?</h3>
+                        <p class="mb-4 text-gray-300">Native ETH balances are part of the EOA/Contract account. Custom token balances are stored within the token contract's storage.</p>
+                        <h4 class="font-semibold mb-2">Conceptual Diagram: Balances</h4>
+                        <div class="relative p-4 border-2 border-dashed border-gray-600 rounded-lg h-48 flex items-center justify-center">
+                            <span class="absolute -top-3 left-4 bg-gray-800 px-2 font-bold text-gray-400">Ethereum World State</span>
+                            <div class="text-center">
+                                <p class="font-bold text-gray-200 mb-1">Address (EOA)</p>
+                                <p class="text-sm text-gray-400">nonce, balance (ETH)</p>
+                                <p class="font-bold text-gray-200 mt-4 mb-1">Address (Contract)</p>
+                                <p class="text-sm text-gray-400">nonce, balance (ETH), storage hash, code hash</p>
+                                <p class="text-xs text-gray-500 mt-2">Custom token balances are in Contract Storage</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ETH vs Solana Token Model -->
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 md:col-span-2">
+                        <h3 class="text-xl font-bold mb-4 text-gray-100">Custom Tokens: Ethereum vs. Solana</h3>
+                        <p class="mb-4 text-gray-300">The architecture for custom tokens differs significantly between chains.</p>
+                        <ul class="list-disc list-inside space-y-1 text-gray-300">
+                            <li>**Ethereum:** Every custom token (e.g., USDC, USDT) is a **new, independently deployed smart contract**.</li>
+                            <li>**Solana:** All tokens are **instances managed by a single, canonical SPL Token Program**.</li>
+                        </ul>
+                    </div>
+                    <!-- ERC-20 Spec -->
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 md:col-span-2">
+                        <h3 class="text-xl font-bold mb-4 text-gray-100">ERC-20 Standard Specifications</h3>
+                        <p class="mb-4 text-gray-300">The ERC-20 standard defines a set of functions and events for fungible tokens to ensure interoperability.</p>
+                        <ul class="list-disc list-inside space-y-1 text-gray-300">
+                            <li>`totalSupply()`: Total number of tokens in circulation.</li>
+                            <li>`balanceOf(address account)`: Balance of tokens held by a specific address.</li>
+                            <li>`transfer(address recipient, uint256 amount)`: Transfers tokens from caller's account to recipient.</li>
+                            <li>`allowance(address owner, address spender)`: Amount spender is allowed to transfer on behalf of owner.</li>
+                            <li>`approve(address spender, uint256 amount)`: Approves spender to transfer tokens on caller's behalf.</li>
+                            <li>`transferFrom(address from, address to, uint256 amount)`: Transfers tokens from `from` to `to` by an approved `spender`.</li>
+                        </ul>
+                        <p class="mt-4 text-sm text-gray-400">Note: The ERC-20 standard does NOT define minting or burning logic; these are added by the token issuer.</p>
+                    </div>
+                    <!-- Full Token Contract Example -->
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 md:col-span-2">
+                        <h3 class="text-xl font-bold mb-4 text-gray-100">Example: Basic Token Contract (ERC-20-like)</h3>
+                        <p class="mb-4 text-gray-300">A simplified token contract demonstrating core functionalities including minting and burning.</p>
+                        <div class="collapsible-header" onclick="toggleCode('erc20-full-contract-code')">
+                            <span>Show Code</span>
+                            <span class="arrow-icon">></span>
+                        </div>
+                        <div id="erc20-full-contract-code" class="collapsible-content">
+                            <pre class="code-block-container"><code>contract Token {
+  string public name;
+  uint public supply = 0;
+  address public owner;
+  mapping(address =&gt; uint) public balances; // ERC-20 like balance mapping
+
+  constructor(string memory _name) {
+    name = _name;
+    owner = msg.sender;
+  }
+
+  function mintTo(address to, uint amount) public { // Simplified minting logic
+    require(msg.sender == owner, &quot;Only owner can mint&quot;);
+    balances[to] += amount;
+    supply += amount;
+  }
+
+  function transfer(address to, uint amount) public { // ERC-20 transfer
+    require(balances[msg.sender] &gt;= amount, &quot;Insufficient balance&quot;);
+    balances[msg.sender] -= amount;
+    balances[to] += amount;
+  }
+
+  function burn(uint amount) public { // Simplified burning logic
+    require(balances[msg.sender] &gt;= amount, &quot;Insufficient balance to burn&quot;);
+    balances[msg.sender] -= amount;
+    supply -= amount;
+  }
+}</code></pre>
+                        </div>
+                    </div>
+                    <!-- TransferFrom & Allowance Example -->
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 md:col-span-2">
+                        <h3 class="text-xl font-bold mb-4 text-gray-100">`approve` & `transferFrom` (ERC-20 Allowance)</h3>
+                        <p class="mb-4 text-gray-300">This mechanism allows a third party (spender) to move tokens on behalf of an owner, essential for dApp interactions.</p>
+                        <div class="collapsible-header" onclick="toggleCode('erc20-transferfrom-code')">
+                            <span>Show Code</span>
+                            <span class="arrow-icon">></span>
+                        </div>
+                        <div id="erc20-transferfrom-code" class="collapsible-content">
+                            <pre class="code-block-container"><code>contract TokenWithAllowance {
+  mapping(address =&gt; uint) public balances;
+  mapping(address =&gt; mapping(address =&gt; uint)) public allowance; // owner =&gt; spender =&gt; amount
+
+  function approve(address spender, uint amount) public {
+    allowance[msg.sender][spender] = amount;
+    // emit Approval(msg.sender, spender, amount); // ERC-20 Approval event
+  }
+
+  function transferFrom(address from, address to, uint amount) public {
+    require(balances[from] &gt;= amount, &quot;Insufficient balance&quot;);
+    require(allowance[from][msg.sender] &gt;= amount, &quot;Allowance exceeded&quot;);
+
+    balances[from] -= amount;
+    balances[to] += amount;
+    allowance[from][msg.sender] -= amount; // Deduct from allowance
+  }
+}</code></pre>
+                        </div>
+                    </div>
+                    <!-- Token Launch Methods -->
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                        <h3 class="text-xl font-bold mb-4 text-gray-100">How to Mint/Launch a Token?</h3>
+                        <p class="mb-4 text-gray-300">Common methods for distributing newly created tokens:</p>
+                        <ul class="list-disc list-inside space-y-1 text-gray-300">
+                            <li>**Initial Coin Offering (ICO):** Selling tokens to raise capital.</li>
+                            <li>**Airdrop:** Distributing tokens for free to a large number of addresses.</li>
+                            <li>**Fair Launch:** No pre-sale or private allocation; tokens distributed transparently.</li>
+                            <li>**Token Vesting / Token Unlocking:** Releasing tokens over time (e.g., for team members).</li>
+                        </ul>
                     </div>
                 </div>
             </section>
@@ -694,15 +1223,15 @@ contract MyContract {
             document.querySelector(`button[onclick="showTab('${tabName}')"]`).classList.add('active');
         }
 
-        function showDetails(detailKey) {
-            const pane = document.getElementById('accounts-details');
-            const data = detailsData[detailKey];
-            if (data) {
-                pane.innerHTML = `
-                    <h4 class="font-bold text-xl mb-2 text-slate-800">${data.title}</h4>
-                    <p class="text-slate-600">${data.content}</p>
-                `;
-                pane.classList.add('active');
+        function toggleCode(id) {
+            const content = document.getElementById(id);
+            const arrow = content.previousElementSibling.querySelector('.arrow-icon');
+            if (content.classList.contains('expanded')) {
+                content.classList.remove('expanded');
+                arrow.classList.remove('expanded');
+            } else {
+                content.classList.add('expanded');
+                arrow.classList.add('expanded');
             }
         }
         
